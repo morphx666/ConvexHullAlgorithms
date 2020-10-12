@@ -8,7 +8,7 @@ namespace ConvexHullAlgorithms.Algorithms {
 
         public override PointF[] Run() {
             PointF pointOnHull = GetLeftMost(points);
-            PointF[] p = new PointF[points.Length];
+            PointF[] p = new PointF[points.Length + 1];
             PointF endPoint;
             int i = 0;
             do {

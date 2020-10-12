@@ -30,11 +30,11 @@ namespace ConvexHullAlgorithms.Algorithms {
 
             List<PointF> l1 = new List<PointF>();
             List<PointF> l2 = new List<PointF>();
-            int n = 3;
+            int n = 10;
             int m = Math.Max(s1.Count, s2.Count);
             for(int i = 0; i < m; i += n) {
-                if(i < s1.Count) l1 = FindHull(s1.Skip(i).Take(n).ToList(), a, b);
-                if(i < s2.Count) l2 = FindHull(s2.Skip(i).Take(n).ToList(), b, a);
+                l1 = i < s1.Count ? FindHull(s1.Skip(i).Take(n).ToList(), a, b) : FindHull(s1, a, b);
+                l2 = i < s2.Count ? FindHull(s2.Skip(i).Take(n).ToList(), b, a) : FindHull(s2, b, a);
                 yield return l1.Concat(l2).ToArray();
             }
 

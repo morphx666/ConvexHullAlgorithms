@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace ConvexHullAlgorithms {
     public partial class FormMain : Form {
-        private int pointsCount = 250;
+        private int pointsCount = 500;
         private PointF[] points;
         private PointF[] p;
 
@@ -59,12 +59,10 @@ namespace ConvexHullAlgorithms {
             ct?.Cancel();
             ct = GetPoints();
 
-            double n = 10;
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            int n = 250;
+            long t = DateTime.Now.Ticks;
             for(int i = 0; i < n; i++) abs[abIdx].Algorithm.Run();
-            sw.Stop();
-            elapsed = $"{sw.ElapsedMilliseconds / n:N0} ms";
+            elapsed = $"{(DateTime.Now.Ticks - t) / (double)(1000 * n):N2} ms";
         }
 
         private CancellationTokenSource GetPoints() {
@@ -129,17 +127,17 @@ namespace ConvexHullAlgorithms {
                 points[i] = new PointF(x, y);
             }
 
-            //List<PointF> pts = new List<PointF>();
+            //List<PointF> ptsC = new List<PointF>();
             //w = this.DisplayRectangle.Width / 2;
             //h = this.DisplayRectangle.Height / 2;
             //int r = (int)(Math.Min(w, h) * 0.8);
             //for(int i = 0; i < 360; i += 10) {
             //    float x = (float)(w + r * Math.Cos(i * Math.PI / 180.0));
             //    float y = (float)(h + r * Math.Sin(i * Math.PI / 180.0));
-            //    pts.Add(new PointF(x, y));
+            //    ptsC.Add(new PointF(x, y));
             //}
-            //points = pts.ToArray();
-            //pointsCount = pts.Count;
+            //points = ptsC.ToArray();
+            //pointsCount = ptsC.Count;
 
             List<PointF> pts = new List<PointF>(points);
             bool isDone;

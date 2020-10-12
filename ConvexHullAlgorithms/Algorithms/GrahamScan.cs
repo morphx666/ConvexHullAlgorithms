@@ -24,8 +24,7 @@ namespace ConvexHullAlgorithms.Algorithms {
             PointF[] sorted = SortPoints(p);
 
             for(int i = 0; i < sorted.Length; i++) {
-                while(stack.Count > 1 && CCW(stack.ElementAt(1), stack.Peek(), sorted[i]) <= 0)
-                    stack.Pop();
+                while(stack.Count > 1 && CCW(stack.ElementAt(1), stack.Peek(), sorted[i]) <= 0) stack.Pop();
                 stack.Push(sorted[i]);
             }
 
@@ -40,8 +39,7 @@ namespace ConvexHullAlgorithms.Algorithms {
             PointF[] sorted = SortPoints(p);
 
             for(int i = 0; i < sorted.Length; i++) {
-                while(stack.Count > 1 && CCW(stack.ElementAt(1), stack.Peek(), sorted[i]) <= 0)
-                    stack.Pop();
+                while(stack.Count > 1 && CCW(stack.ElementAt(1), stack.Peek(), sorted[i]) <= 0) stack.Pop();
                 stack.Push(sorted[i]);
                 yield return stack.ToArray();
             }
@@ -54,7 +52,7 @@ namespace ConvexHullAlgorithms.Algorithms {
             PointF v1 = new PointF(p2.X - p1.X, p2.Y - p1.Y);
             PointF v2 = new PointF(p3.X - p2.X, p3.Y - p2.Y);
 
-            return v1.X * v2.Y - v1.Y * v2.X;
+            return Cross(v2, v1);
         }
 
         private PointF[] SortPoints(PointF p) {
@@ -74,7 +72,7 @@ namespace ConvexHullAlgorithms.Algorithms {
                 for(int i = 0; i < s.Count; i++) {
                     for(int j = i + 1; j < s.Count; j++) {
                         if(Math.Abs(s[i].Angle - s[j].Angle) <= 0.000001) {
-                        //if(s[i].Angle == s[j].Angle) {
+                            //if(s[i].Angle == s[j].Angle) {
                             double d1 = Distance(s[i].Point, p);
                             double d2 = Distance(s[j].Point, p);
 
