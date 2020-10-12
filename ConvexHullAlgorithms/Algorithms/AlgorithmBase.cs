@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting;
-using System.Windows.Forms;
 
 namespace ConvexHullAlgorithms.Algorithms {
     public abstract class AlgorithmBase {
@@ -17,6 +14,12 @@ namespace ConvexHullAlgorithms.Algorithms {
 
         public abstract PointF[] Run();
         public abstract IEnumerable<PointF[]> RunYield();
+
+        public static double Distance(PointF p1, PointF p2) {
+            double dx = p2.X - p1.X;
+            double dy = p2.Y - p1.Y;
+            return Math.Sqrt(dx * dx + dy * dy);
+        }
 
         protected int GetPointLocation(PointF p, PointF l1, PointF l2) {
             l2.X -= l1.X;

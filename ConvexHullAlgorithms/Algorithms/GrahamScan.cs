@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using static ConvexHullAlgorithms.Algorithms.GrahamScan;
 
 namespace ConvexHullAlgorithms.Algorithms {
     public class GrahamScan : AlgorithmBase {
@@ -74,7 +73,8 @@ namespace ConvexHullAlgorithms.Algorithms {
                 isDone = true;
                 for(int i = 0; i < s.Count; i++) {
                     for(int j = i + 1; j < s.Count; j++) {
-                        if(Math.Abs(s[i].Angle - s[j].Angle) <= 0.001) {
+                        if(Math.Abs(s[i].Angle - s[j].Angle) <= 0.000001) {
+                        //if(s[i].Angle == s[j].Angle) {
                             double d1 = Distance(s[i].Point, p);
                             double d2 = Distance(s[j].Point, p);
 
@@ -92,12 +92,6 @@ namespace ConvexHullAlgorithms.Algorithms {
             PointF[] r = new PointF[s.Count];
             for(int i = 0; i < s.Count; i++) r[i] = s[i].Point;
             return r;
-        }
-
-        private double Distance(PointF p1, PointF p2) {
-            double dx = p2.X - p1.X;
-            double dy = p2.Y - p1.Y;
-            return Math.Sqrt(dx * dx + dy * dy);
         }
 
         private PointF GetBottomLeftMost() {
