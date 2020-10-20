@@ -9,7 +9,17 @@ using System.Windows.Forms;
 
 namespace ConvexHullAlgorithms {
     public partial class FormMain : Form {
-        private int pointsCount = 250;
+        private enum PointsShapes {
+            Random,
+            Circle,
+            Rectangle
+        }
+        private PointsShapes pointsShape = PointsShapes.Random;
+        private int psIdx = 0;
+        private Array psValues;
+
+        private int defaultPointsCount = 250;
+        private int pointsCount;
         private PointF[] points;
         private PointF[] p;
 
@@ -28,10 +38,12 @@ namespace ConvexHullAlgorithms {
 
             this.Resize += (_, __) => GenerateRandomPoints();
             this.Paint += Draw;
-            this.KeyDown += SwitchAlgorithm;
+            this.KeyDown += HandleKeyDown;
+
+            psValues = Enum.GetValues(typeof(PointsShapes));
         }
 
-        private void SwitchAlgorithm(object sender, KeyEventArgs e) {
+        private void HandleKeyDown(object sender, KeyEventArgs e) {
             switch(e.KeyCode) {
                 case Keys.Left:
                     if(abIdx == 0) return;
@@ -40,6 +52,16 @@ namespace ConvexHullAlgorithms {
                 case Keys.Right:
                     if(abIdx == abs.Count - 1) return;
                     abIdx++;
+                    break;
+                case Keys.Up:
+                    if(psIdx == psValues.Length - 1) return;
+                    pointsShape = (PointsShapes)psValues.GetValue(++psIdx);
+                    GenerateRandomPoints();
+                    break;
+                case Keys.Down:
+                    if(psIdx == 0) return;
+                    pointsShape = (PointsShapes)psValues.GetValue(--psIdx);
+                    GenerateRandomPoints();
                     break;
                 case Keys.Enter:
                     GenerateRandomPoints();
@@ -100,47 +122,65 @@ namespace ConvexHullAlgorithms {
             //g.DrawClosedCurve(Pens.Red, p, 0, FillMode.Alternate);
 
             if(p?.Length > 1) using(Pen pc = new Pen(Color.OrangeRed, 2)) g.DrawLines(pc, p);
-            g.DrawString($"[{abIdx + 1}/{abs.Count}] {abs[abIdx].Name}", this.Font, Brushes.White, 5, 5);
 
             int h = this.Font.Height;
-            g.DrawString($"Elapsed:    {elapsed}", this.Font, Brushes.Yellow, 5, h * 1 + 10);
-            g.DrawString($"Points:     {p?.Length} / {pointsCount}", this.Font, Brushes.Yellow, 5, h * 2 + 10);
-            g.DrawString($"Left/Right: Change Algorithm", this.Font, Brushes.Gray, 5, h * 3 + 10);
-            g.DrawString($"Enter:      Randomize Points", this.Font, Brushes.Gray, 5, h * 4 + 10);
-            g.DrawString($"Escape:     Close Program", this.Font, Brushes.Gray, 5, h * 5 + 10);
+            g.DrawString($"[{abIdx + 1}/{abs.Count}] {abs[abIdx].Name}", this.Font, Brushes.White, 5, 5 + h * 0);
+            g.DrawString($"[{psIdx + 1}/{psValues.Length}] {(PointsShapes)psValues.GetValue(psIdx)}", this.Font, Brushes.LightGray, 5, +h * 1 + 5);
+
+            g.DrawString($"Elapsed:    {elapsed}", this.Font, Brushes.Yellow, 5, h * 2 + 10);
+            g.DrawString($"Points:     {p?.Length} / {pointsCount}", this.Font, Brushes.Yellow, 5, h * 3 + 10);
+            g.DrawString($"Left/Right: Change Algorithm", this.Font, Brushes.Gray, 5, h * 4 + 10);
+            g.DrawString($"Up/Down:    Change Points Shape", this.Font, Brushes.Gray, 5, h * 5 + 10);
+            g.DrawString($"Enter:      Randomize Points", this.Font, Brushes.Gray, 5, h * 6 + 10);
+            g.DrawString($"Escape:     Close Program", this.Font, Brushes.Gray, 5, h * 7 + 10);
         }
 
         private void GenerateRandomPoints() {
-            points = new PointF[pointsCount];
+            points = new PointF[defaultPointsCount];
 
             Random rnd = new Random();
 
+            List<PointF> pts = new List<PointF>();
             double xo = this.DisplayRectangle.Width * 0.1;
             double yo = this.DisplayRectangle.Height * 0.1;
             double w = this.DisplayRectangle.Width * 0.8;
             double h = this.DisplayRectangle.Height * 0.8;
 
-            for(int i = 0; i < pointsCount; i++) {
-                float x = (float)(xo + rnd.NextDouble() * w);
-                float y = (float)(yo + rnd.NextDouble() * h);
-                points[i] = new PointF(x, y);
+            switch(pointsShape) {
+                case PointsShapes.Random:
+                    for(int i = 0; i < defaultPointsCount; i++) {
+                        float x = (float)(xo + rnd.NextDouble() * w);
+                        float y = (float)(yo + rnd.NextDouble() * h);
+                        pts.Add(new PointF(x, y));
+                    }
+                    break;
+
+                case PointsShapes.Circle:
+                    w = this.DisplayRectangle.Width / 2;
+                    h = this.DisplayRectangle.Height / 2;
+                    int r = (int)(Math.Min(w, h) * 0.8);
+                    for(int i = 0; i < 360; i += 10) {
+                        float x = (float)(w + r * Math.Cos(i * Math.PI / 180.0));
+                        float y = (float)(h + r * Math.Sin(i * Math.PI / 180.0));
+                        pts.Add(new PointF(x, y));
+                    }
+                    break;
+
+                case PointsShapes.Rectangle:
+                    pts = new List<PointF>();
+                    for(double x = xo; x < w; x += 40) {
+                        pts.Add(new PointF((float)x, (float)yo));
+                        pts.Add(new PointF((float)x, (float)h));
+                    }
+                    for(double y = yo; y < h; y += 40) {
+                        pts.Add(new PointF((float)xo, (float)y));
+                        pts.Add(new PointF((float)w, (float)y));
+                    }
+                    break;
             }
 
-            //List<PointF> ptsC = new List<PointF>();
-            //w = this.DisplayRectangle.Width / 2;
-            //h = this.DisplayRectangle.Height / 2;
-            //int r = (int)(Math.Min(w, h) * 0.8);
-            //for(int i = 0; i < 360; i += 10) {
-            //    float x = (float)(w + r * Math.Cos(i * Math.PI / 180.0));
-            //    float y = (float)(h + r * Math.Sin(i * Math.PI / 180.0));
-            //    ptsC.Add(new PointF(x, y));
-            //}
-            //points = ptsC.ToArray();
-            //pointsCount = ptsC.Count;
-
-            List<PointF> pts = new List<PointF>(points);
             bool isDone;
-            int psM = ps + 3;
+            int psM = ps + 4;
             do {
                 isDone = true;
                 for(int i = 0; i < pts.Count; i++) {
