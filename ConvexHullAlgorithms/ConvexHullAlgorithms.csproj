@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\AlgorithmBase.cs" />
+    <Compile Include="Algorithms\Chan.cs" />
     <Compile Include="Algorithms\GiftWrapping.cs" />
     <Compile Include="Algorithms\GrahamScan.cs" />
     <Compile Include="Algorithms\MonotoneChain.cs" />

@@ -18,6 +18,8 @@ namespace ConvexHullAlgorithms.Algorithms {
             ch.AddRange(FindHull(s1, a, b));
             ch.AddRange(FindHull(s2, b, a));
 
+            ch = ch.Distinct().ToList();
+            ch.Add(a);
             return ch.ToArray();
         }
 
@@ -35,13 +37,10 @@ namespace ConvexHullAlgorithms.Algorithms {
             for(int i = 0; i < m; i += n) {
                 l1 = i < s1.Count ? FindHull(s1.Skip(i).Take(n).ToList(), a, b) : FindHull(s1, a, b);
                 l2 = i < s2.Count ? FindHull(s2.Skip(i).Take(n).ToList(), b, a) : FindHull(s2, b, a);
-                yield return l1.Concat(l2).ToArray();
+                yield return l1.Concat(l2).Distinct().ToArray();
             }
 
-            List<PointF> ch = new List<PointF>();
-            ch.AddRange(FindHull(s1, a, b));
-            ch.AddRange(FindHull(s2, b, a));
-            yield return ch.ToArray();
+            yield return Run();
         }
 
         private List<PointF> FindHull(List<PointF> pts, PointF a, PointF b) {
@@ -78,18 +77,18 @@ namespace ConvexHullAlgorithms.Algorithms {
         }
 
         // https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
-        private bool IsPointInsideTriangle(PointF p, PointF a, PointF b, PointF c) {
-            double a1 = AreaTriangle(a, b, c);
-            double a2 = AreaTriangle(p, a, b);
-            double a3 = AreaTriangle(p, b, c);
-            double a4 = AreaTriangle(p, a, c);
-            return a1 == a2 + a3 + a4;
-        }
+        //private bool IsPointInsideTriangle(PointF p, PointF a, PointF b, PointF c) {
+        //    double a1 = AreaTriangle(a, b, c);
+        //    double a2 = AreaTriangle(p, a, b);
+        //    double a3 = AreaTriangle(p, b, c);
+        //    double a4 = AreaTriangle(p, a, c);
+        //    return a1 == a2 + a3 + a4;
+        //}
 
-        private double AreaTriangle(PointF a, PointF b, PointF c) {
-            return Math.Abs((a.X * (b.Y - c.Y) +
-                             b.X * (c.Y - a.Y) +
-                             c.X * (a.Y - b.Y)) / 2.0);
-        }
+        //private double AreaTriangle(PointF a, PointF b, PointF c) {
+        //    return Math.Abs((a.X * (b.Y - c.Y) +
+        //                     b.X * (c.Y - a.Y) +
+        //                     c.X * (a.Y - b.Y)) / 2.0);
+        //}
     }
 }
