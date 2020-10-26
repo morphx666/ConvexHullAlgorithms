@@ -15,6 +15,24 @@ namespace ConvexHullAlgorithms.Algorithms {
         public abstract PointF[] Run();
         public abstract IEnumerable<PointF[]> RunYield();
 
+        public double Perimeter {
+            get {
+                double d = 0;
+                for(int i = 0; i < points.Length - 1; i++)
+                    d += Distance(points[i], points[i + 1]);
+                return d;
+            }
+        }
+
+        public double Area {
+            get {
+                double a = 0;
+                for(int i = 0; i < points.Length - 1; i++)
+                    a += Math.Abs(points[i].X * points[i + 1].Y - points[i + 1].X * points[i].Y);
+                return a / 2;
+            }
+        }
+
         public static double Distance(PointF p1, PointF p2) {
             double dx = p2.X - p1.X;
             double dy = p2.Y - p1.Y;

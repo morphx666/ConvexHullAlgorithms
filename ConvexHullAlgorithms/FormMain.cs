@@ -1,6 +1,7 @@
 ﻿using ConvexHullAlgorithms.Algorithms;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Threading;
@@ -84,6 +85,9 @@ namespace ConvexHullAlgorithms {
             long t = DateTime.Now.Ticks;
             for(int i = 0; i < n; i++) abs[abIdx].Algorithm.Run();
             elapsed = $"{(DateTime.Now.Ticks - t) / (double)(1000 * n):N2} ms";
+
+            Debug.WriteLine($"P={abs[0].Algorithm.Perimeter:N2}");
+            Debug.WriteLine($"A={abs[0].Algorithm.Area:N2}");
         }
 
         private CancellationTokenSource GetPoints() {
@@ -125,14 +129,18 @@ namespace ConvexHullAlgorithms {
 
             int h = this.Font.Height;
             g.DrawString($"[{abIdx + 1}/{abs.Count}] {abs[abIdx].Name}", this.Font, Brushes.White, 5, 5 + h * 0);
-            g.DrawString($"[{psIdx + 1}/{psValues.Length}] {(PointsShapes)psValues.GetValue(psIdx)}", this.Font, Brushes.LightGray, 5, +h * 1 + 5);
+            g.DrawString($"[{psIdx + 1}/{psValues.Length}] {(PointsShapes)psValues.GetValue(psIdx)}", this.Font, Brushes.LightGray, 5, h * 1 + 5);
 
             g.DrawString($"Elapsed:    {elapsed}", this.Font, Brushes.Yellow, 5, h * 2 + 10);
             g.DrawString($"Points:     {p?.Length} / {pointsCount}", this.Font, Brushes.Yellow, 5, h * 3 + 10);
-            g.DrawString($"Left/Right: Change Algorithm", this.Font, Brushes.Gray, 5, h * 4 + 10);
-            g.DrawString($"Up/Down:    Change Points Shape", this.Font, Brushes.Gray, 5, h * 5 + 10);
-            g.DrawString($"Enter:      Randomize Points", this.Font, Brushes.Gray, 5, h * 6 + 10);
-            g.DrawString($"Escape:     Close Program", this.Font, Brushes.Gray, 5, h * 7 + 10);
+
+            g.DrawString($"Perimeter:  {abs[abIdx].Algorithm.Perimeter,13:N2}", this.Font, Brushes.YellowGreen, 5, h * 4 + 15);
+            g.DrawString($"Area:       {abs[abIdx].Algorithm.Area,13:N2}", this.Font, Brushes.YellowGreen, 5, h * 5 + 15);
+
+            g.DrawString($"Left/Right: Change Algorithm", this.Font, Brushes.Gray, 5, h * 6 + 20);
+            g.DrawString($"Up/Down:    Change Points Shape", this.Font, Brushes.Gray, 5, h * 7 + 20);
+            g.DrawString($"Enter:      Randomize Points", this.Font, Brushes.Gray, 5, h * 8 + 20);
+            g.DrawString($"Escape:     Close Program", this.Font, Brushes.Gray, 5, h * 9 + 20);
         }
 
         private void GenerateRandomPoints() {
