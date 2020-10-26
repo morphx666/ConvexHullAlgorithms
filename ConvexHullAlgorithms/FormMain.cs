@@ -37,7 +37,7 @@ namespace ConvexHullAlgorithms {
                           ControlStyles.OptimizedDoubleBuffer |
                           ControlStyles.UserPaint, true);
 
-            this.Resize += (_, __) => GenerateRandomPoints();
+            this.Resize += (_, __) => GeneratePoints();
             this.Paint += Draw;
             this.KeyDown += HandleKeyDown;
 
@@ -57,15 +57,15 @@ namespace ConvexHullAlgorithms {
                 case Keys.Up:
                     if(psIdx == psValues.Length - 1) return;
                     pointsShape = (PointsShapes)psValues.GetValue(++psIdx);
-                    GenerateRandomPoints();
+                    GeneratePoints();
                     break;
                 case Keys.Down:
                     if(psIdx == 0) return;
                     pointsShape = (PointsShapes)psValues.GetValue(--psIdx);
-                    GenerateRandomPoints();
+                    GeneratePoints();
                     break;
                 case Keys.Enter:
-                    GenerateRandomPoints();
+                    GeneratePoints();
                     return;
                 case Keys.Escape:
                     ct?.Cancel();
@@ -74,12 +74,12 @@ namespace ConvexHullAlgorithms {
                 default:
                     return;
             }
-            RunAlgorithm();
+            BenchmarkAlgorithm();
         }
 
-        private void RunAlgorithm() {
+        private void BenchmarkAlgorithm() {
             ct?.Cancel();
-            ct = GetPoints();
+            ct = RunAlgorithm();
 
             int n = 250;
             long t = DateTime.Now.Ticks;
@@ -90,7 +90,7 @@ namespace ConvexHullAlgorithms {
             Debug.WriteLine($"A={abs[0].Algorithm.Area:N2}");
         }
 
-        private CancellationTokenSource GetPoints() {
+        private CancellationTokenSource RunAlgorithm() {
             CancellationTokenSource ct = new CancellationTokenSource();
 
             Task.Run(() => {
@@ -123,8 +123,6 @@ namespace ConvexHullAlgorithms {
             for(int i = 0; i < points.Length; i++)
                 g.FillEllipse(Brushes.White, points[i].X - ps2, points[i].Y - ps2, ps, ps);
 
-            //g.DrawClosedCurve(Pens.Red, p, 0, FillMode.Alternate);
-
             if(p?.Length > 1) using(Pen pc = new Pen(Color.OrangeRed, 2)) g.DrawLines(pc, p);
 
             int h = this.Font.Height;
@@ -143,7 +141,7 @@ namespace ConvexHullAlgorithms {
             g.DrawString($"Escape:     Close Program", this.Font, Brushes.Gray, 5, h * 9 + 20);
         }
 
-        private void GenerateRandomPoints() {
+        private void GeneratePoints() {
             points = new PointF[defaultPointsCount];
 
             Random rnd = new Random();
@@ -192,13 +190,12 @@ namespace ConvexHullAlgorithms {
             do {
                 isDone = true;
                 for(int i = 0; i < pts.Count; i++) {
-                    for(int j = i + 1; j < pts.Count; j++) {
+                    for(int j = i + 1; j < pts.Count; j++)
                         if(AlgorithmBase.Distance(pts[i], pts[j]) < psM) {
                             isDone = false;
                             pts.RemoveAt(j);
                             break;
                         }
-                    }
                     if(!isDone) break;
                 }
             } while(!isDone);
@@ -207,7 +204,7 @@ namespace ConvexHullAlgorithms {
 
             abs = AlgorithmBase.GetAlgorithms(points);
 
-            RunAlgorithm();
+            BenchmarkAlgorithm();
         }
     }
 }
